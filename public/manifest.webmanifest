@@ -1,0 +1,17 @@
+{
+  "name": "Video Second Brain",
+  "short_name": "Second Brain",
+  "description": "A shared visual library for video ideas, references, links, film dates, and agent access.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3eee5",
+  "theme_color": "#302922",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
