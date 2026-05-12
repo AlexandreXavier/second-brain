@@ -23,10 +23,12 @@ import {
   KeyRound,
   Library,
   LogOut,
+  Moon,
   Plus,
   RefreshCw,
   Search,
   Sparkles,
+  Sun,
   Tag,
   Trash2,
   UserRound,
@@ -65,6 +67,51 @@ function readableType(type: Idea["type"]) {
   return names[type];
 }
 
+function getInitials(name?: string | null, email?: string | null) {
+  const fallback = email?.split("@")[0] || "Perfil";
+  const source = name?.trim() || fallback;
+  return source
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function ProfileAvatar({
+  name,
+  email,
+  photoURL,
+  size = 34,
+}: {
+  name?: string | null;
+  email?: string | null;
+  photoURL?: string | null;
+  size?: number;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const initials = getInitials(name, email);
+
+  if (photoURL && !imageFailed) {
+    return (
+      <img
+        className="profile-avatar"
+        src={photoURL}
+        alt=""
+        referrerPolicy="no-referrer"
+        style={{ width: size, height: size }}
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <span className="profile-avatar initials" style={{ width: size, height: size }}>
+      {initials}
+    </span>
+  );
+}
+
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
@@ -74,13 +121,24 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [isCaptureOpen, setIsCaptureOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const storedTheme = window.localStorage.getItem("second-brain-theme");
+    return storedTheme === "dark" ? "dark" : "light";
+  });
   const [notice, setNotice] = useState("");
   const [dataError, setDataError] = useState("");
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("second-brain-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser);
       setAuthReady(true);
+      setIsCaptureOpen(false);
+      setIsProfileOpen(false);
     });
   }, []);
 
@@ -268,9 +326,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="brand-mark" aria-hidden="true">
-          <Film size={21} />
-        </div>
+        <img className="brand-logo" src="/xani-assets/logo.svg" alt="" />
         <div className="brand-copy">
           <span>Segundo Cerebro</span>
           <strong>Ideias de Video</strong>
@@ -288,8 +344,17 @@ function App() {
           <span className="tooltip">Capturar</span>
         </button>
         <button className="profile-button" type="button" onClick={() => setIsProfileOpen((value) => !value)}>
-          {user.photoURL ? <img src={user.photoURL} alt="" /> : <UserRound size={19} />}
+          <ProfileAvatar name={user.displayName} email={user.email} photoURL={user.photoURL} />
           <span>{user.displayName || "Perfil"}</span>
+        </button>
+        <button
+          className="icon-button theme-button"
+          type="button"
+          aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+          onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+        >
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          <span className="tooltip">{theme === "dark" ? "Claro" : "Escuro"}</span>
         </button>
       </header>
 
@@ -304,7 +369,6 @@ function App() {
           <div className="library-header">
             <div>
               <span className="eyebrow">Biblioteca visual</span>
-              <h1>Tudo o que vale a pena filmar.</h1>
             </div>
             <div className="library-stat">
               <Library size={18} />
@@ -376,9 +440,7 @@ function LoadingScreen() {
   return (
     <div className="auth-screen">
       <div className="auth-panel">
-        <div className="brand-mark large">
-          <Film size={28} />
-        </div>
+        <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" />
         <p>A abrir a biblioteca.</p>
       </div>
     </div>
@@ -401,9 +463,7 @@ function SignInScreen({ onSignIn }: { onSignIn: () => Promise<void> }) {
   return (
     <div className="auth-screen">
       <section className="auth-panel">
-        <div className="brand-mark large">
-          <Film size={28} />
-        </div>
+        <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" />
         <span className="eyebrow">Sistema criativo privado</span>
         <h1>Um segundo cerebro visual para ideias de video.</h1>
         <p>
@@ -854,7 +914,7 @@ type, url, title, source, sourceName, author, description, previewText, thumbnai
   return (
     <div className="profile-inner">
       <div className="profile-head">
-        {user.photoURL ? <img src={user.photoURL} alt="" /> : <UserRound size={28} />}
+        <ProfileAvatar name={user.displayName} email={user.email} photoURL={user.photoURL} size={52} />
         <div>
           <span className="eyebrow">Perfil</span>
           <h2>{user.displayName || "Sessao iniciada"}</h2>
@@ -907,9 +967,7 @@ type, url, title, source, sourceName, author, description, previewText, thumbnai
 function EmptyState({ hasIdeas }: { hasIdeas: boolean }) {
   return (
     <div className="empty-state">
-      <div className="brand-mark">
-        <Library size={21} />
-      </div>
+      <img className="brand-logo empty-logo" src="/xani-assets/logo.svg" alt="" />
       <h2>{hasIdeas ? "Sem ideias correspondentes." : "As tuas primeiras referencias vao aparecer aqui."}</h2>
       <p>
         {hasIdeas
