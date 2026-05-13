@@ -326,7 +326,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <img className="brand-logo" src="/xani-assets/logo.svg" alt="" />
+        <img className="brand-logo" src="/xani-assets/logo.svg" alt="" style={{ width: '3rem', height: '3rem' }} />
         <div className="brand-copy">
           <span>Segundo Cerebro</span>
           <strong>Ideias de Video</strong>
@@ -463,7 +463,7 @@ function SignInScreen({ onSignIn }: { onSignIn: () => Promise<void> }) {
   return (
     <div className="auth-screen">
       <section className="auth-panel">
-        <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" />
+        <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" style={{ width: '10rem', height: '10rem' }} />
         <span className="eyebrow">Sistema criativo privado</span>
         <h1>Um segundo cerebro visual para ideias de video.</h1>
         <p>
