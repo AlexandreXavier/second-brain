@@ -112,6 +112,14 @@ function ProfileAvatar({
   );
 }
 
+type ElectronAPI = {
+  isElectron?: boolean;
+  onMenuAction?: (callback: (action: string) => void) => () => void;
+};
+
+const electronAPI = (window as typeof window & { electronAPI?: ElectronAPI }).electronAPI;
+const isElectron = !!electronAPI?.isElectron;
+
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
@@ -133,6 +141,14 @@ function App() {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem("second-brain-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!isElectron || !electronAPI?.onMenuAction) return;
+    return electronAPI.onMenuAction((action) => {
+      if (action === "open-capture") setIsCaptureOpen(true);
+      if (action === "toggle-theme") setTheme((t) => (t === "dark" ? "light" : "dark"));
+    });
+  }, []);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (nextUser) => {
@@ -222,8 +238,6 @@ function App() {
       return categoryMatch && (!needle || haystack.includes(needle));
     });
   }, [activeCategory, userFilteredIdeas, queryText]);
-
-  const isElectron = !!(window as typeof window & { electronAPI?: { isElectron?: boolean } }).electronAPI?.isElectron;
 
   async function handleGoogleSignIn() {
     try {

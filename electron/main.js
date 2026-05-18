@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const path = require("node:path");
 const { resolveRendererUrl, createWindowOptions, shouldAllowPopup } = require("./window.js");
+const { buildMenuTemplate } = require("./menu.js");
 
 const isDev = !app.isPackaged;
 const distDir = path.join(__dirname, "..", "dist");
@@ -24,6 +25,12 @@ function createWindow() {
     }
     return { action: "deny" };
   });
+
+  const menu = Menu.buildFromTemplate(buildMenuTemplate({
+    onCapture: () => win.webContents.send("menu-action", "open-capture"),
+    onToggleTheme: () => win.webContents.send("menu-action", "toggle-theme"),
+  }));
+  Menu.setApplicationMenu(menu);
 
   win.loadURL(resolveRendererUrl(isDev, distDir));
 }
