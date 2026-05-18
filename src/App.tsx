@@ -223,11 +223,13 @@ function App() {
     });
   }, [activeCategory, userFilteredIdeas, queryText]);
 
+  const isElectron = !!(window as typeof window & { electronAPI?: { isElectron?: boolean } }).electronAPI?.isElectron;
+
   async function handleGoogleSignIn() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      if (typeof error === "object" && error && "code" in error && error.code === "auth/popup-blocked") {
+      if (typeof error === "object" && error && "code" in error && error.code === "auth/popup-blocked" && !isElectron) {
         await signInWithRedirect(auth, googleProvider);
         return;
       }

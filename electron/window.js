@@ -14,4 +14,8 @@ function createWindowOptions() {
   };
 }
 
-module.exports = { resolveRendererUrl, createWindowOptions };
+function shouldAllowPopup(url) {
+  return url.startsWith("https://");
+}
+
+module.exports = { resolveRendererUrl, createWindowOptions, shouldAllowPopup };

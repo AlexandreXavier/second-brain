@@ -1,12 +1,30 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("node:path");
-const { resolveRendererUrl, createWindowOptions } = require("./window.js");
+const { resolveRendererUrl, createWindowOptions, shouldAllowPopup } = require("./window.js");
 
 const isDev = !app.isPackaged;
 const distDir = path.join(__dirname, "..", "dist");
 
 function createWindow() {
-  const win = new BrowserWindow(createWindowOptions());
+  const options = createWindowOptions();
+  options.webPreferences.preload = path.join(__dirname, "preload.js");
+
+  const win = new BrowserWindow(options);
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (shouldAllowPopup(url)) {
+      return {
+        action: "allow",
+        overrideBrowserWindowOptions: {
+          width: 500,
+          height: 600,
+          webPreferences: { nodeIntegration: false, contextIsolation: true },
+        },
+      };
+    }
+    return { action: "deny" };
+  });
+
   win.loadURL(resolveRendererUrl(isDev, distDir));
 }
 
