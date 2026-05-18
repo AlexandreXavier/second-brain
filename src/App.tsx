@@ -112,9 +112,11 @@ function ProfileAvatar({
   );
 }
 
+type MenuAction = string | { type: string; source?: string; filePath?: string };
+
 type ElectronAPI = {
   isElectron?: boolean;
-  onMenuAction?: (callback: (action: string) => void) => () => void;
+  onMenuAction?: (callback: (action: MenuAction) => void) => () => void;
 };
 
 const electronAPI = (window as typeof window & { electronAPI?: ElectronAPI }).electronAPI;
@@ -129,6 +131,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("Todas");
   const [userFilter, setUserFilter] = useState<"mine" | "all">("mine");
   const [isCaptureOpen, setIsCaptureOpen] = useState(false);
+  const [captureSource, setCaptureSource] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     const storedTheme = window.localStorage.getItem("second-brain-theme");
@@ -145,8 +148,13 @@ function App() {
   useEffect(() => {
     if (!isElectron || !electronAPI?.onMenuAction) return;
     return electronAPI.onMenuAction((action) => {
-      if (action === "open-capture") setIsCaptureOpen(true);
-      if (action === "toggle-theme") setTheme((t) => (t === "dark" ? "light" : "dark"));
+      if (typeof action === "string") {
+        if (action === "open-capture") { setCaptureSource(""); setIsCaptureOpen(true); }
+        if (action === "toggle-theme") setTheme((t) => (t === "dark" ? "light" : "dark"));
+      } else if (action.type === "open-capture") {
+        setCaptureSource(action.source ?? action.filePath ?? "");
+        setIsCaptureOpen(true);
+      }
     });
   }, []);
 
@@ -345,8 +353,22 @@ function App() {
     return <SignInScreen onSignIn={handleGoogleSignIn} />;
   }
 
+  function handleDragOver(event: React.DragEvent) {
+    event.preventDefault();
+  }
+
+  function handleDrop(event: React.DragEvent) {
+    event.preventDefault();
+    const uriList = event.dataTransfer.getData("text/uri-list") || event.dataTransfer.getData("text/plain");
+    const url = uriList.split(/\r?\n/).find((line) => line.trim() && !line.startsWith("#")) ?? null;
+    if (url) {
+      setCaptureSource(url);
+      setIsCaptureOpen(true);
+    }
+  }
+
   return (
-    <div className="app-shell">
+    <div className="app-shell" onDragOver={handleDragOver} onDrop={handleDrop}>
       <header className="topbar">
         <img className="brand-logo" src="/xani-assets/logo.svg" alt="" style={{ width: '3rem', height: '3rem' }} />
         <div className="brand-copy">
@@ -384,7 +406,7 @@ function App() {
         className={`workspace ${isCaptureOpen ? "is-capture-open" : ""} ${isProfileOpen ? "is-profile-open" : ""}`.trim()}
       >
         <aside className={`capture-panel ${isCaptureOpen ? "is-open" : ""}`}>
-          <CaptureForm onSave={saveIdea} />
+          <CaptureForm key={captureSource} initialSource={captureSource} onSave={saveIdea} />
         </aside>
 
         <section className="library-area" aria-label="Ideias guardadas">
@@ -533,8 +555,8 @@ function SignInScreen({ onSignIn }: { onSignIn: () => Promise<void> }) {
   );
 }
 
-function CaptureForm({ onSave }: { onSave: (draft: IdeaDraft, file?: File | null) => Promise<void> }) {
-  const [source, setSource] = useState("");
+function CaptureForm({ onSave, initialSource = "" }: { onSave: (draft: IdeaDraft, file?: File | null) => Promise<void>; initialSource?: string }) {
+  const [source, setSource] = useState(initialSource);
   const [draft, setDraft] = useState<IdeaDraft>(emptyDraft);
   const [categoryText, setCategoryText] = useState("");
   const [file, setFile] = useState<File | null>(null);

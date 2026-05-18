@@ -2,15 +2,25 @@ const { app, BrowserWindow, Menu } = require("electron");
 const path = require("node:path");
 const { resolveRendererUrl, createWindowOptions, shouldAllowPopup } = require("./window.js");
 const { buildMenuTemplate } = require("./menu.js");
+const { isImagePath } = require("./drag.js");
 
 const isDev = !app.isPackaged;
 const distDir = path.join(__dirname, "..", "dist");
+
+let win = null;
+
+app.on("open-file", (event, filePath) => {
+  event.preventDefault();
+  if (win && isImagePath(filePath)) {
+    win.webContents.send("menu-action", { type: "open-capture", filePath });
+  }
+});
 
 function createWindow() {
   const options = createWindowOptions();
   options.webPreferences.preload = path.join(__dirname, "preload.js");
 
-  const win = new BrowserWindow(options);
+  win = new BrowserWindow(options);
 
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (shouldAllowPopup(url)) {
