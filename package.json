@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host localhost",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite --host localhost\" \"wait-on http://localhost:5173 && electron electron/main.js\"",
+    "electron:build": "npm run build && cd electron && npm run build"
   },
   "dependencies": {
     "firebase": "latest",
@@ -18,7 +20,9 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
+    "concurrently": "latest",
     "typescript": "latest",
-    "vite": "latest"
+    "vite": "latest",
+    "wait-on": "latest"
   }
 }

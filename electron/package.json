@@ -1,0 +1,17 @@
+{
+  "name": "video-second-brain-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "node --test window.test.js",
+    "dev": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "electron": "latest"
+  },
+  "devDependencies": {
+    "electron-builder": "latest"
+  }
+}
