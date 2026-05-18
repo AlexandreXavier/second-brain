@@ -119,6 +119,7 @@ function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [queryText, setQueryText] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todas");
+  const [userFilter, setUserFilter] = useState<"mine" | "all">("mine");
   const [isCaptureOpen, setIsCaptureOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
@@ -190,15 +191,20 @@ function App() {
     };
   }, [user]);
 
+  const userFilteredIdeas = useMemo(() => {
+    if (userFilter === "all") return ideas;
+    return ideas.filter((idea) => idea.createdBy?.uid === user?.uid);
+  }, [ideas, user, userFilter]);
+
   const categories = useMemo(() => {
     const categorySet = new Set<string>();
-    ideas.forEach((idea) => idea.categories?.forEach((category) => categorySet.add(category)));
+    userFilteredIdeas.forEach((idea) => idea.categories?.forEach((category) => categorySet.add(category)));
     return ["Todas", ...Array.from(categorySet).sort((a, b) => a.localeCompare(b))];
-  }, [ideas]);
+  }, [userFilteredIdeas]);
 
   const filteredIdeas = useMemo(() => {
     const needle = queryText.trim().toLowerCase();
-    return ideas.filter((idea) => {
+    return userFilteredIdeas.filter((idea) => {
       const categoryMatch = activeCategory === "Todas" || idea.categories?.includes(activeCategory);
       const haystack = [
         idea.title,
@@ -215,7 +221,7 @@ function App() {
         .toLowerCase();
       return categoryMatch && (!needle || haystack.includes(needle));
     });
-  }, [activeCategory, ideas, queryText]);
+  }, [activeCategory, userFilteredIdeas, queryText]);
 
   async function handleGoogleSignIn() {
     try {
@@ -370,10 +376,26 @@ function App() {
             <div>
               <span className="eyebrow">Biblioteca visual</span>
             </div>
+            <div className="user-filter">
+              <button
+                className={userFilter === "mine" ? "is-active" : ""}
+                type="button"
+                onClick={() => { setUserFilter("mine"); setActiveCategory("Todas"); }}
+              >
+                Minhas ideias
+              </button>
+              <button
+                className={userFilter === "all" ? "is-active" : ""}
+                type="button"
+                onClick={() => { setUserFilter("all"); setActiveCategory("Todas"); }}
+              >
+                Toda a equipa
+              </button>
+            </div>
             <div className="library-stat">
               <Library size={18} />
-              <strong>{ideas.length}</strong>
-              <span>{ideas.length === 1 ? "item" : "itens"}</span>
+              <strong>{userFilteredIdeas.length}</strong>
+              <span>{userFilteredIdeas.length === 1 ? "item" : "itens"}</span>
             </div>
           </div>
 
