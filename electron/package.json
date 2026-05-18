@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "main": "main.js",
   "scripts": {
-    "test": "node --test window.test.js menu.test.js drag.test.js",
+    "test": "node --test window.test.js menu.test.js drag.test.js build-config.test.js",
     "dev": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder --config build-config.js"
   },
   "dependencies": {
     "electron": "latest"

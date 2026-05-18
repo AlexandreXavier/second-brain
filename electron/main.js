@@ -5,7 +5,9 @@ const { buildMenuTemplate } = require("./menu.js");
 const { isImagePath } = require("./drag.js");
 
 const isDev = !app.isPackaged;
-const distDir = path.join(__dirname, "..", "dist");
+const distDir = isDev
+  ? path.join(__dirname, "..", "dist")
+  : path.join(process.resourcesPath, "renderer");
 
 let win = null;
 
