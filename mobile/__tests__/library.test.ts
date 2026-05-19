@@ -106,6 +106,11 @@ test('sortIdeas with alpha sorts by title A to Z', () => {
   expect(sortIdeas(ideas, 'alpha').map(i => i.id)).toEqual(['2', '3', '1']);
 });
 
+test('searchIdeas treats whitespace-only query as empty and returns all ideas', () => {
+  const ideas = [idea({ id: '1' }), idea({ id: '2' })];
+  expect(searchIdeas(ideas, '   ', '')).toHaveLength(2);
+});
+
 test('searchIdeas is case-insensitive', () => {
   const ideas = [idea({ id: '1', title: 'Video Viral' })];
   expect(searchIdeas(ideas, 'VIRAL', '').map(i => i.id)).toEqual(['1']);
