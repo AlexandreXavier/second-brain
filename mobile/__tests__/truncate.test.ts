@@ -11,3 +11,7 @@ test('truncateText truncates text over limit and appends ellipsis', () => {
 test('truncateText returns text unchanged when length equals maxChars', () => {
   expect(truncateText('Nota', 4)).toBe('Nota');
 });
+
+test('truncateText strips trailing space when cut point lands on a space', () => {
+  expect(truncateText('aa bb cc', 3)).toBe('aa…');
+});
