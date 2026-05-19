@@ -10,6 +10,12 @@ test("config has productName", () => {
   assert.ok(config.productName);
 });
 
+test("config publishes to the GitHub second-brain repo", () => {
+  assert.equal(config.publish.provider, "github");
+  assert.equal(config.publish.owner, "AlexandreXavier");
+  assert.equal(config.publish.repo, "second-brain");
+});
+
 test("config targets dmg for mac", () => {
   const hasDmg = config.mac.target.some((t) => t.target === "dmg");
   assert.ok(hasDmg);
@@ -22,6 +28,10 @@ test("config targets both arm64 and x64 architectures", () => {
 
 test("config enables hardenedRuntime for Gatekeeper compliance", () => {
   assert.equal(config.mac.hardenedRuntime, true);
+});
+
+test("config sets a custom mac icon", () => {
+  assert.ok(config.mac.icon?.endsWith("icon.icns"));
 });
 
 test("config excludes test files from bundle", () => {

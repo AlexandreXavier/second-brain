@@ -1,0 +1,53 @@
+name: Desktop Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
+        run: |
+          tag_version="${GITHUB_REF_NAME#desktop-v}"
+          pkg_version="$(node -p "require('./electron/package.json').version")"
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match electron/package.json version ($pkg_version)"
+            exit 1
+          fi
+          echo "Tag matches package version: $pkg_version"
+
+      - name: Install web dependencies
+        run: npm install
+
+      - name: Build web renderer
+        run: npm run build
+
+      - name: Install desktop dependencies
+        run: npm install
+        working-directory: electron
+        env:
+          # electron-builder downloads its own Electron runtime; the electron
+          # package's binary is never used in a build-only job.
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+
+      - name: Build and publish desktop app
+        run: npm run build -- --publish always
+        working-directory: electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
