@@ -7,6 +7,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, storage, auth } from '../lib/firebase';
 import { buildCaptureDraft, patchDraftWithImage } from '../lib/capture';
 import { buildIdeaPayload } from '../lib/save';
+import { buildStoragePath } from '../lib/storage';
 import { ideaMetaLabel } from '../lib/display';
 import type { IdeaDraft } from '../lib/types';
 
@@ -44,7 +45,7 @@ export function CaptureScreen() {
     try {
       let uploadedUrl: string | null = null;
       if (imageUri) {
-        const filename = `ideas/${user.uid}/${Date.now()}.jpg`;
+        const filename = buildStoragePath(user.uid);
         const ref = storage().ref(filename);
         await ref.putFile(imageUri);
         uploadedUrl = await ref.getDownloadURL();
