@@ -16,3 +16,7 @@ export function ideaMetaLabel(idea: MetaInput): string {
   if (idea.source) return idea.source;
   return TYPE_LABELS[idea.type];
 }
+
+export function ideaCountLabel(count: number): string {
+  return count === 1 ? '1 ideia' : `${count} ideias`;
+}

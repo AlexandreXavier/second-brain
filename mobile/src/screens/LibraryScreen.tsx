@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { firestore, auth } from '../lib/firebase';
 import { scopeIdeas, extractCategories, searchIdeas, sortIdeas } from '../lib/library';
-import { ideaMetaLabel } from '../lib/display';
+import { ideaMetaLabel, ideaCountLabel } from '../lib/display';
 import { formatDate } from '../lib/format';
 import type { Idea } from '../lib/types';
 
@@ -103,6 +103,8 @@ export function LibraryScreen() {
         ))}
       </ScrollView>
 
+      <Text style={styles.count}>{ideaCountLabel(filteredIdeas.length)}</Text>
+
       <FlatList
         data={filteredIdeas}
         keyExtractor={item => item.id}
@@ -162,5 +164,6 @@ const styles = StyleSheet.create({
   cardAuthor: { fontSize: 13, color: '#666' },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 8 },
   tag: { fontSize: 11, backgroundColor: '#ebebeb', paddingVertical: 2, paddingHorizontal: 8, borderRadius: 10, color: '#444' },
+  count: { fontSize: 11, color: '#999', paddingHorizontal: 12, marginBottom: 4 },
   empty: { textAlign: 'center', color: '#999', marginTop: 48 },
 });

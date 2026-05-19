@@ -1,4 +1,4 @@
-import { ideaMetaLabel } from '../src/lib/display';
+import { ideaMetaLabel, ideaCountLabel } from '../src/lib/display';
 
 test('ideaMetaLabel returns sourceName when present', () => {
   expect(ideaMetaLabel({ type: 'article', sourceName: 'Blog Criativo', source: 'example.com' })).toBe('Blog Criativo');
@@ -21,4 +21,16 @@ test('ideaMetaLabel maps screenshot to Captura and idea to Nota and article to A
   expect(ideaMetaLabel({ type: 'screenshot' })).toBe('Captura');
   expect(ideaMetaLabel({ type: 'idea' })).toBe('Nota');
   expect(ideaMetaLabel({ type: 'article' })).toBe('Artigo');
+});
+
+test('ideaCountLabel returns plural for zero', () => {
+  expect(ideaCountLabel(0)).toBe('0 ideias');
+});
+
+test('ideaCountLabel returns singular for one', () => {
+  expect(ideaCountLabel(1)).toBe('1 ideia');
+});
+
+test('ideaCountLabel returns plural for many', () => {
+  expect(ideaCountLabel(5)).toBe('5 ideias');
 });
