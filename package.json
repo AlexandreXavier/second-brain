@@ -7,7 +7,7 @@
     "dev": "vite --host localhost",
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
     "preview": "vite preview",
-    "electron:dev": "concurrently \"vite --host localhost\" \"wait-on http://localhost:5173 && electron electron/main.js\"",
+    "electron:dev": "concurrently \"vite --host localhost\" \"wait-on http://localhost:5173 && electron/node_modules/.bin/electron electron/main.js\"",
     "electron:build": "npm run build && cd electron && npm run build"
   },
   "dependencies": {

@@ -3,6 +3,11 @@ const path = require("node:path");
 module.exports = {
   appId: "com.segundocerebro.desktop",
   productName: "Segundo Cerebro",
+  publish: {
+    provider: "github",
+    owner: "AlexandreXavier",
+    repo: "second-brain",
+  },
   directories: {
     buildResources: path.join(__dirname, "build-resources"),
     output: path.join(__dirname, "..", "dist-electron"),
@@ -17,6 +22,7 @@ module.exports = {
   ],
   mac: {
     category: "public.app-category.productivity",
+    icon: path.join(__dirname, "build-resources", "icon.icns"),
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: path.join(__dirname, "build-resources", "entitlements.mac.plist"),

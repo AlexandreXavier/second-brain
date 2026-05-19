@@ -2,16 +2,16 @@
   "name": "video-second-brain-desktop",
   "private": true,
   "version": "0.1.0",
+  "description": "Biblioteca visual de ideias de vídeo partilhada pela equipa.",
+  "author": "Alexandre Xavier",
   "main": "main.js",
   "scripts": {
     "test": "node --test window.test.js menu.test.js drag.test.js build-config.test.js",
     "dev": "electron .",
     "build": "electron-builder --config build-config.js"
   },
-  "dependencies": {
-    "electron": "latest"
-  },
   "devDependencies": {
+    "electron": "latest",
     "electron-builder": "latest"
   }
 }
