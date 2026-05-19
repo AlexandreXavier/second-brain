@@ -19,3 +19,9 @@ export async function buildCaptureDraft(source: string, idToken: string | null):
 
   return draft;
 }
+
+export function patchDraftWithImage(prev: IdeaDraft | null, fileName: string | undefined): IdeaDraft {
+  const base = prev ?? { categories: [] };
+  const title = prev?.title || (fileName ? fileName.replace(/\.[^.]+$/, '') : '') || 'Captura';
+  return { ...base, type: 'screenshot', title };
+}

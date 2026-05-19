@@ -1,4 +1,4 @@
-import { buildCaptureDraft } from '../src/lib/capture';
+import { buildCaptureDraft, patchDraftWithImage } from '../src/lib/capture';
 import { createPreviewFromUrl } from '../src/lib/metadata';
 import { suggestTitle } from '../src/lib/title';
 
@@ -36,4 +36,31 @@ test('buildCaptureDraft skips suggestTitle when idToken is null', async () => {
   await buildCaptureDraft('Ideia solta', null);
 
   expect(mockSuggestTitle).not.toHaveBeenCalled();
+});
+
+test('patchDraftWithImage always sets type to screenshot', () => {
+  const result = patchDraftWithImage(null, undefined);
+  expect(result.type).toBe('screenshot');
+});
+
+test('patchDraftWithImage preserves existing title from prev draft', () => {
+  const result = patchDraftWithImage({ type: 'youtube', title: 'Video incrivel', categories: [] }, 'outro.jpg');
+  expect(result.title).toBe('Video incrivel');
+});
+
+test('patchDraftWithImage derives title from fileName by stripping extension', () => {
+  const result = patchDraftWithImage(null, 'clip_gravado.mp4');
+  expect(result.title).toBe('clip_gravado');
+});
+
+test('patchDraftWithImage falls back to Captura when no title and no fileName', () => {
+  const result = patchDraftWithImage(null, undefined);
+  expect(result.title).toBe('Captura');
+});
+
+test('patchDraftWithImage preserves other fields from prev draft', () => {
+  const prev = { type: 'article' as const, title: 'Artigo', categories: ['Video'], url: 'https://example.com' };
+  const result = patchDraftWithImage(prev, undefined);
+  expect(result.categories).toEqual(['Video']);
+  expect(result.url).toBe('https://example.com');
 });

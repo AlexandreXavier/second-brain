@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, storage, auth } from '../lib/firebase';
-import { buildCaptureDraft } from '../lib/capture';
+import { buildCaptureDraft, patchDraftWithImage } from '../lib/capture';
 import { buildIdeaPayload } from '../lib/save';
 import type { IdeaDraft } from '../lib/types';
 
@@ -33,11 +33,7 @@ export function CaptureScreen() {
     const asset = result.assets?.[0];
     if (!asset?.uri) return;
     setImageUri(asset.uri);
-    setDraft(prev => ({
-      ...(prev ?? { categories: [] }),
-      type: 'screenshot',
-      title: prev?.title || asset.fileName?.replace(/\.[^.]+$/, '') || 'Captura',
-    }));
+    setDraft(prev => patchDraftWithImage(prev, asset.fileName));
   }
 
   async function handleSave() {
