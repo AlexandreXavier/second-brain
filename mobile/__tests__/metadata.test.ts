@@ -108,6 +108,12 @@ test('createPreviewFromUrl strips HTML tags from tweet oEmbed previewText', asyn
   expect(draft.previewText).toContain('Este e o texto do tweet');
 });
 
+test('createPreviewFromUrl extracts channel handle as author for Instagram user URL', async () => {
+  const draft = await createPreviewFromUrl('https://instagram.com/canal_criativo');
+  expect(draft.type).toBe('instagram');
+  expect(draft.author).toBe('@canal_criativo');
+});
+
 test('createPreviewFromUrl populates title and author from YouTube oEmbed', async () => {
   jest.spyOn(global, 'fetch').mockResolvedValue({
     ok: true,
