@@ -4,6 +4,7 @@ import {
   Image, StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { firestore, auth } from '../lib/firebase';
+import { scopeIdeas, extractCategories, searchIdeas } from '../lib/library';
 import type { Idea } from '../lib/types';
 
 type UserFilter = 'mine' | 'all';
@@ -28,27 +29,20 @@ export function LibraryScreen() {
     return unsubscribe;
   }, []);
 
-  const scopedIdeas = useMemo(() => {
-    if (userFilter === 'all') return ideas;
-    return ideas.filter(idea => idea.createdBy?.uid === user?.uid);
-  }, [ideas, user, userFilter]);
+  const scopedIdeas = useMemo(
+    () => scopeIdeas(ideas, userFilter, user?.uid ?? ''),
+    [ideas, user, userFilter],
+  );
 
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    scopedIdeas.forEach(idea => idea.categories?.forEach(c => set.add(c)));
-    return ['Todas', ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, [scopedIdeas]);
+  const categories = useMemo(
+    () => ['Todas', ...extractCategories(scopedIdeas)],
+    [scopedIdeas],
+  );
 
-  const filteredIdeas = useMemo(() => {
-    const needle = queryText.trim().toLowerCase();
-    return scopedIdeas.filter(idea => {
-      const categoryMatch = activeCategory === 'Todas' || idea.categories?.includes(activeCategory);
-      if (!needle) return categoryMatch;
-      const haystack = [idea.title, idea.source, idea.description, idea.previewText, idea.notes]
-        .filter(Boolean).join(' ').toLowerCase();
-      return categoryMatch && haystack.includes(needle);
-    });
-  }, [scopedIdeas, queryText, activeCategory]);
+  const filteredIdeas = useMemo(
+    () => searchIdeas(scopedIdeas, queryText, activeCategory === 'Todas' ? '' : activeCategory),
+    [scopedIdeas, queryText, activeCategory],
+  );
 
   if (loading) {
     return <View style={styles.center}><ActivityIndicator /></View>;
