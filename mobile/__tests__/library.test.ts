@@ -90,6 +90,22 @@ test('sortIdeas with alpha sorts by title A to Z', () => {
   expect(sortIdeas(ideas, 'alpha').map(i => i.id)).toEqual(['2', '3', '1']);
 });
 
+test('searchIdeas with category and text query returns ideas matching both', () => {
+  const ideas = [
+    idea({ id: '1', title: 'Video viral', categories: ['Video'] }),
+    idea({ id: '2', title: 'Video viral', categories: ['Humor'] }),
+    idea({ id: '3', title: 'Outro tema', categories: ['Video'] }),
+  ];
+  expect(searchIdeas(ideas, 'viral', 'Video').map(i => i.id)).toEqual(['1']);
+});
+
+test('searchIdeas excludes idea whose text matches but category does not', () => {
+  const ideas = [
+    idea({ id: '1', title: 'Video viral', categories: ['Humor'] }),
+  ];
+  expect(searchIdeas(ideas, 'viral', 'Video')).toHaveLength(0);
+});
+
 test('searchIdeas finds idea when query matches author', () => {
   const ideas = [
     idea({ id: '1', author: 'Canal Criativo' }),
