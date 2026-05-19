@@ -29,3 +29,13 @@ test('buildEditPayload keeps original categories when categoryText is empty', ()
   const payload = buildEditPayload(idea({ categories: ['Video'] }), { title: '', categoryText: '', notes: '' });
   expect(payload.categories).toEqual(['Video']);
 });
+
+test('buildEditPayload uses notes from updates when non-empty', () => {
+  const payload = buildEditPayload(idea(), { title: '', categoryText: '', notes: 'Nova nota' });
+  expect(payload.notes).toBe('Nova nota');
+});
+
+test('buildEditPayload preserves original notes when update notes is empty', () => {
+  const payload = buildEditPayload(idea({ notes: 'Nota original' }), { title: '', categoryText: '', notes: '' });
+  expect(payload.notes).toBe('Nota original');
+});
