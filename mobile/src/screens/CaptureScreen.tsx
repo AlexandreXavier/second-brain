@@ -7,6 +7,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, storage, auth } from '../lib/firebase';
 import { buildCaptureDraft, patchDraftWithImage } from '../lib/capture';
 import { buildIdeaPayload } from '../lib/save';
+import { ideaMetaLabel } from '../lib/display';
 import type { IdeaDraft } from '../lib/types';
 
 export function CaptureScreen() {
@@ -101,7 +102,7 @@ export function CaptureScreen() {
           {(draft.imageUrl || draft.thumbnailUrl) ? (
             <Image source={{ uri: draft.imageUrl || draft.thumbnailUrl }} style={styles.previewImage} />
           ) : null}
-          <Text style={styles.previewType}>{draft.type}</Text>
+          <Text style={styles.previewType}>{ideaMetaLabel(draft)}</Text>
           <Text style={styles.previewTitle}>{draft.title}</Text>
           {draft.author ? <Text style={styles.previewAuthor}>{draft.author}</Text> : null}
         </View>

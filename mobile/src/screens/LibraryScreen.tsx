@@ -8,6 +8,7 @@ import { scopeIdeas, extractCategories, searchIdeas, sortIdeas } from '../lib/li
 import { ideaMetaLabel, ideaCountLabel } from '../lib/display';
 import { formatDate } from '../lib/format';
 import { buildEditPayload } from '../lib/edit';
+import { canDeleteIdea } from '../lib/delete';
 import { formatCategories } from '../lib/metadata';
 import type { Idea } from '../lib/types';
 
@@ -111,14 +112,14 @@ export function LibraryScreen() {
         data={filteredIdeas}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => <IdeaCard idea={item} />}
+        renderItem={({ item }) => <IdeaCard idea={item} userId={user?.uid ?? ''} />}
         ListEmptyComponent={<Text style={styles.empty}>Sem ideias correspondentes.</Text>}
       />
     </View>
   );
 }
 
-function IdeaCard({ idea }: { idea: Idea }) {
+function IdeaCard({ idea, userId }: { idea: Idea; userId: string }) {
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editCategoryText, setEditCategoryText] = useState('');
@@ -130,6 +131,10 @@ function IdeaCard({ idea }: { idea: Idea }) {
     setEditCategoryText(formatCategories(idea.categories ?? []));
     setEditNotes(idea.notes ?? '');
     setEditing(true);
+  }
+
+  async function handleDelete() {
+    await firestore().collection('ideas').doc(idea.id).delete();
   }
 
   async function handleSaveEdit() {
@@ -177,9 +182,16 @@ function IdeaCard({ idea }: { idea: Idea }) {
                 ))}
               </View>
             ) : null}
-            <Pressable onPress={openEdit} style={styles.editBtn}>
-              <Text style={styles.editBtnText}>Editar</Text>
-            </Pressable>
+            <View style={styles.editRow}>
+              <Pressable onPress={openEdit} style={styles.editBtn}>
+                <Text style={styles.editBtnText}>Editar</Text>
+              </Pressable>
+              {canDeleteIdea(idea, userId) ? (
+                <Pressable onPress={handleDelete} style={styles.editBtn}>
+                  <Text style={styles.deleteBtnText}>Apagar</Text>
+                </Pressable>
+              ) : null}
+            </View>
           </>
         )}
       </View>
@@ -223,4 +235,5 @@ const styles = StyleSheet.create({
   editCancelText: { fontSize: 13, color: '#999' },
   editBtn: { marginTop: 8, alignSelf: 'flex-start' },
   editBtnText: { fontSize: 12, color: '#888' },
+  deleteBtnText: { fontSize: 12, color: '#c0392b' },
 });
