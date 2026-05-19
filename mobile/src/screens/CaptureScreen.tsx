@@ -5,8 +5,8 @@ import {
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, storage, auth } from '../lib/firebase';
-import { parseCategories } from '../lib/metadata';
 import { buildCaptureDraft } from '../lib/capture';
+import { buildIdeaPayload } from '../lib/save';
 import type { IdeaDraft } from '../lib/types';
 
 export function CaptureScreen() {
@@ -43,25 +43,24 @@ export function CaptureScreen() {
   async function handleSave() {
     const user = auth().currentUser;
     if (!user) return;
-    const currentDraft = draft ?? { type: 'idea' as const, title: source || 'Ideia solta', categories: [] };
     setIsSaving(true);
     try {
-      let finalDraft = { ...currentDraft, categories: parseCategories(categoryText) };
-
+      let uploadedUrl: string | null = null;
       if (imageUri) {
         const filename = `ideas/${user.uid}/${Date.now()}.jpg`;
         const ref = storage().ref(filename);
         await ref.putFile(imageUri);
-        const downloadUrl = await ref.getDownloadURL();
-        finalDraft = { ...finalDraft, type: 'screenshot', imageUrl: downloadUrl, thumbnailUrl: downloadUrl };
+        uploadedUrl = await ref.getDownloadURL();
       }
 
+      const payload = buildIdeaPayload(draft, source, categoryText, uploadedUrl, {
+        uid: user.uid, name: user.displayName, email: user.email, photoURL: user.photoURL,
+      });
+
       await firestore().collection('ideas').add({
-        ...finalDraft,
-        title: finalDraft.title || source || 'Ideia solta',
+        ...payload,
         createdAt: firestore.FieldValue.serverTimestamp(),
         updatedAt: firestore.FieldValue.serverTimestamp(),
-        createdBy: { uid: user.uid, name: user.displayName, email: user.email, photoURL: user.photoURL, type: 'human' },
       });
 
       setSource('');
