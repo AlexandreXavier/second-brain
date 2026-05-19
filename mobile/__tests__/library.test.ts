@@ -1,4 +1,4 @@
-import { scopeIdeas, extractCategories, searchIdeas } from '../src/lib/library';
+import { scopeIdeas, extractCategories, searchIdeas, sortIdeas } from '../src/lib/library';
 import type { Idea } from '../src/lib/types';
 
 const idea = (overrides: Partial<Idea>): Idea => ({
@@ -60,4 +60,41 @@ test('searchIdeas filters by text query across title, description, source', () =
   expect(searchIdeas(ideas, 'viral', '').map(i => i.id)).toEqual(['1']);
   expect(searchIdeas(ideas, 'culinaria', '').map(i => i.id)).toEqual(['2']);
   expect(searchIdeas(ideas, 'publico', '').map(i => i.id)).toEqual(['3']);
+});
+
+const ts = (iso: string) => ({ toDate: () => new Date(iso) });
+
+test('sortIdeas with newest returns most recent first', () => {
+  const ideas = [
+    idea({ id: '1', createdAt: ts('2026-01-01') as any }),
+    idea({ id: '2', createdAt: ts('2026-03-01') as any }),
+    idea({ id: '3', createdAt: ts('2026-02-01') as any }),
+  ];
+  expect(sortIdeas(ideas, 'newest').map(i => i.id)).toEqual(['2', '3', '1']);
+});
+
+test('sortIdeas with oldest returns earliest first', () => {
+  const ideas = [
+    idea({ id: '1', createdAt: ts('2026-03-01') as any }),
+    idea({ id: '2', createdAt: ts('2026-01-01') as any }),
+  ];
+  expect(sortIdeas(ideas, 'oldest').map(i => i.id)).toEqual(['2', '1']);
+});
+
+test('sortIdeas with alpha sorts by title A to Z', () => {
+  const ideas = [
+    idea({ id: '1', title: 'Zebra' }),
+    idea({ id: '2', title: 'Abacate' }),
+    idea({ id: '3', title: 'Mango' }),
+  ];
+  expect(sortIdeas(ideas, 'alpha').map(i => i.id)).toEqual(['2', '3', '1']);
+});
+
+test('sortIdeas pushes ideas without createdAt to the end for newest and oldest', () => {
+  const ideas = [
+    idea({ id: '1', createdAt: ts('2026-01-01') as any }),
+    idea({ id: '2' }),
+  ];
+  expect(sortIdeas(ideas, 'newest').map(i => i.id)).toEqual(['1', '2']);
+  expect(sortIdeas(ideas, 'oldest').map(i => i.id)).toEqual(['2', '1']);
 });

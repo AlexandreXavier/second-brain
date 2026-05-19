@@ -4,12 +4,13 @@ import {
   Image, StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { firestore, auth } from '../lib/firebase';
-import { scopeIdeas, extractCategories, searchIdeas } from '../lib/library';
+import { scopeIdeas, extractCategories, searchIdeas, sortIdeas } from '../lib/library';
 import { ideaMetaLabel } from '../lib/display';
 import { formatDate } from '../lib/format';
 import type { Idea } from '../lib/types';
 
 type UserFilter = 'mine' | 'all';
+type SortOrder = 'newest' | 'oldest' | 'alpha';
 
 export function LibraryScreen() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -17,6 +18,7 @@ export function LibraryScreen() {
   const [queryText, setQueryText] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todas');
   const [userFilter, setUserFilter] = useState<UserFilter>('mine');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
 
   const user = auth().currentUser;
 
@@ -42,8 +44,11 @@ export function LibraryScreen() {
   );
 
   const filteredIdeas = useMemo(
-    () => searchIdeas(scopedIdeas, queryText, activeCategory === 'Todas' ? '' : activeCategory),
-    [scopedIdeas, queryText, activeCategory],
+    () => sortIdeas(
+      searchIdeas(scopedIdeas, queryText, activeCategory === 'Todas' ? '' : activeCategory),
+      sortOrder,
+    ),
+    [scopedIdeas, queryText, activeCategory, sortOrder],
   );
 
   if (loading) {
@@ -71,6 +76,20 @@ export function LibraryScreen() {
           onPress={() => { setUserFilter('all'); setActiveCategory('Todas'); }}>
           <Text style={[styles.scopeText, userFilter === 'all' && styles.scopeTextActive]}>Toda a equipa</Text>
         </Pressable>
+      </View>
+
+      <View style={styles.scopeRow}>
+        {(['newest', 'oldest', 'alpha'] as SortOrder[]).map((order, _, arr) => {
+          const labels: Record<SortOrder, string> = { newest: 'Recentes', oldest: 'Antigas', alpha: 'A-Z' };
+          return (
+            <Pressable
+              key={order}
+              style={[styles.sortBtn, sortOrder === order && styles.sortBtnActive]}
+              onPress={() => setSortOrder(order)}>
+              <Text style={[styles.sortText, sortOrder === order && styles.sortTextActive]}>{labels[order]}</Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryStrip}>
@@ -125,6 +144,10 @@ const styles = StyleSheet.create({
   scopeBtnActive: { backgroundColor: '#1a1a1a', borderColor: '#1a1a1a' },
   scopeText: { fontSize: 13, color: '#555' },
   scopeTextActive: { color: '#fff' },
+  sortBtn: { paddingVertical: 5, paddingHorizontal: 12, borderRadius: 16, backgroundColor: '#f0f0f0' },
+  sortBtnActive: { backgroundColor: '#1a1a1a' },
+  sortText: { fontSize: 12, color: '#555' },
+  sortTextActive: { color: '#fff' },
   categoryStrip: { flexGrow: 0, paddingLeft: 12, marginBottom: 8 },
   categoryBtn: { marginRight: 8, paddingVertical: 5, paddingHorizontal: 12, borderRadius: 16, backgroundColor: '#f0f0f0' },
   categoryBtnActive: { backgroundColor: '#1a1a1a' },
