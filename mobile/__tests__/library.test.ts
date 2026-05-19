@@ -26,6 +26,22 @@ test('scopeIdeas with all returns every idea', () => {
   expect(scopeIdeas(ideas, 'all', 'user1')).toHaveLength(2);
 });
 
+test('scopeIdeas with mine excludes ideas where createdBy is absent', () => {
+  const ideas = [
+    idea({ id: '1', createdBy: { uid: 'user1', type: 'human' } }),
+    idea({ id: '2', createdBy: undefined }),
+  ];
+  expect(scopeIdeas(ideas, 'mine', 'user1').map(i => i.id)).toEqual(['1']);
+});
+
+test('scopeIdeas with all includes ideas even when createdBy is absent', () => {
+  const ideas = [
+    idea({ id: '1', createdBy: { uid: 'user1', type: 'human' } }),
+    idea({ id: '2', createdBy: undefined }),
+  ];
+  expect(scopeIdeas(ideas, 'all', 'user1')).toHaveLength(2);
+});
+
 test('extractCategories returns sorted unique categories', () => {
   const ideas = [
     idea({ categories: ['Video', 'Humor'] }),
