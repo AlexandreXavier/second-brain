@@ -108,6 +108,12 @@ test('createPreviewFromUrl strips HTML tags from tweet oEmbed previewText', asyn
   expect(draft.previewText).toContain('Este e o texto do tweet');
 });
 
+test('createPreviewFromUrl sets author from handle in tweet oEmbed fallback', async () => {
+  const draft = await createPreviewFromUrl('https://x.com/canal_criativo/status/123');
+  expect(draft.type).toBe('tweet');
+  expect(draft.author).toBe('@canal_criativo');
+});
+
 test('createPreviewFromUrl extracts channel handle as author for Instagram user URL', async () => {
   const draft = await createPreviewFromUrl('https://instagram.com/canal_criativo');
   expect(draft.type).toBe('instagram');
