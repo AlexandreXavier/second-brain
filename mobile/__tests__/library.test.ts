@@ -90,6 +90,19 @@ test('sortIdeas with alpha sorts by title A to Z', () => {
   expect(sortIdeas(ideas, 'alpha').map(i => i.id)).toEqual(['2', '3', '1']);
 });
 
+test('searchIdeas finds idea when query matches author', () => {
+  const ideas = [
+    idea({ id: '1', author: 'Canal Criativo' }),
+    idea({ id: '2', author: 'Outro Canal' }),
+  ];
+  expect(searchIdeas(ideas, 'criativo', '').map(i => i.id)).toEqual(['1']);
+});
+
+test('searchIdeas returns empty when query matches no field including author', () => {
+  const ideas = [idea({ id: '1', title: 'Video', author: 'Canal X' })];
+  expect(searchIdeas(ideas, 'inexistente', '')).toHaveLength(0);
+});
+
 test('sortIdeas pushes ideas without createdAt to the end for newest and oldest', () => {
   const ideas = [
     idea({ id: '1', createdAt: ts('2026-01-01') as any }),

@@ -29,7 +29,7 @@ export function searchIdeas(ideas: Idea[], query: string, category: string): Ide
   return ideas.filter(idea => {
     const categoryMatch = !category || idea.categories?.includes(category);
     if (!needle) return categoryMatch;
-    const haystack = [idea.title, idea.source, idea.description, idea.previewText, idea.notes]
+    const haystack = [idea.title, idea.author, idea.source, idea.description, idea.previewText, idea.notes]
       .filter(Boolean).join(' ').toLowerCase();
     return categoryMatch && haystack.includes(needle);
   });
