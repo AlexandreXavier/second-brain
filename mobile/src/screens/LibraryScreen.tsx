@@ -7,6 +7,8 @@ import { firestore, auth } from '../lib/firebase';
 import { scopeIdeas, extractCategories, searchIdeas, sortIdeas } from '../lib/library';
 import { ideaMetaLabel, ideaCountLabel } from '../lib/display';
 import { formatDate } from '../lib/format';
+import { buildEditPayload } from '../lib/edit';
+import { formatCategories } from '../lib/metadata';
 import type { Idea } from '../lib/types';
 
 type UserFilter = 'mine' | 'all';
@@ -117,21 +119,69 @@ export function LibraryScreen() {
 }
 
 function IdeaCard({ idea }: { idea: Idea }) {
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategoryText, setEditCategoryText] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  function openEdit() {
+    setEditTitle(idea.title);
+    setEditCategoryText(formatCategories(idea.categories ?? []));
+    setEditNotes(idea.notes ?? '');
+    setEditing(true);
+  }
+
+  async function handleSaveEdit() {
+    setIsSaving(true);
+    try {
+      const payload = buildEditPayload(idea, { title: editTitle, categoryText: editCategoryText, notes: editNotes });
+      await firestore().collection('ideas').doc(idea.id).update({
+        ...payload,
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      });
+      setEditing(false);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   const image = idea.imageUrl || idea.thumbnailUrl;
   return (
     <View style={styles.card}>
       {image ? <Image source={{ uri: image }} style={styles.cardImage} /> : null}
       <View style={styles.cardBody}>
         <Text style={styles.cardMeta}>{ideaMetaLabel(idea)}{idea.createdAt ? `  ·  ${formatDate(idea.createdAt)}` : ''}</Text>
-        <Text style={styles.cardTitle} numberOfLines={3}>{idea.title}</Text>
-        {idea.author ? <Text style={styles.cardAuthor}>{idea.author}</Text> : null}
-        {idea.categories?.length ? (
-          <View style={styles.tagRow}>
-            {idea.categories.map(cat => (
-              <Text key={cat} style={styles.tag}>{cat}</Text>
-            ))}
-          </View>
-        ) : null}
+        {editing ? (
+          <>
+            <TextInput style={styles.editInput} value={editTitle} onChangeText={setEditTitle} placeholder="Titulo" />
+            <TextInput style={styles.editInput} value={editCategoryText} onChangeText={setEditCategoryText} placeholder="Categorias (separadas por virgulas)" />
+            <TextInput style={styles.editInput} value={editNotes} onChangeText={setEditNotes} placeholder="Notas" multiline />
+            <View style={styles.editRow}>
+              <Pressable style={styles.editSaveBtn} onPress={handleSaveEdit} disabled={isSaving}>
+                <Text style={styles.editSaveBtnText}>{isSaving ? 'A guardar…' : 'Guardar'}</Text>
+              </Pressable>
+              <Pressable onPress={() => setEditing(false)}>
+                <Text style={styles.editCancelText}>Cancelar</Text>
+              </Pressable>
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.cardTitle} numberOfLines={3}>{idea.title}</Text>
+            {idea.author ? <Text style={styles.cardAuthor}>{idea.author}</Text> : null}
+            {idea.categories?.length ? (
+              <View style={styles.tagRow}>
+                {idea.categories.map(cat => (
+                  <Text key={cat} style={styles.tag}>{cat}</Text>
+                ))}
+              </View>
+            ) : null}
+            <Pressable onPress={openEdit} style={styles.editBtn}>
+              <Text style={styles.editBtnText}>Editar</Text>
+            </Pressable>
+          </>
+        )}
       </View>
     </View>
   );
@@ -166,4 +216,11 @@ const styles = StyleSheet.create({
   tag: { fontSize: 11, backgroundColor: '#ebebeb', paddingVertical: 2, paddingHorizontal: 8, borderRadius: 10, color: '#444' },
   count: { fontSize: 11, color: '#999', paddingHorizontal: 12, marginBottom: 4 },
   empty: { textAlign: 'center', color: '#999', marginTop: 48 },
+  editInput: { borderWidth: 1, borderColor: '#ddd', borderRadius: 6, padding: 8, fontSize: 14, marginBottom: 6 },
+  editRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 4 },
+  editSaveBtn: { backgroundColor: '#1a1a1a', borderRadius: 6, paddingVertical: 6, paddingHorizontal: 14 },
+  editSaveBtnText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  editCancelText: { fontSize: 13, color: '#999' },
+  editBtn: { marginTop: 8, alignSelf: 'flex-start' },
+  editBtnText: { fontSize: 12, color: '#888' },
 });
