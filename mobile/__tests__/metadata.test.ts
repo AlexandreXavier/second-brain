@@ -70,3 +70,57 @@ test('createPreviewFromUrl classifies generic URL as article', async () => {
   const draft = await createPreviewFromUrl('https://example.com/artigo');
   expect(draft.type).toBe('article');
 });
+
+test('createPreviewFromUrl populates article metadata from microlink', async () => {
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      status: 'success',
+      data: {
+        title: 'Como criar conteudo de qualidade',
+        description: 'Um guia para criadores de video',
+        publisher: 'Blog Criativo',
+        image: { url: 'https://example.com/imagem.jpg' },
+      },
+    }),
+  } as Response);
+
+  const draft = await createPreviewFromUrl('https://example.com/artigo');
+  expect(draft.title).toBe('Como criar conteudo de qualidade');
+  expect(draft.description).toBe('Um guia para criadores de video');
+  expect(draft.sourceName).toBe('Blog Criativo');
+  expect(draft.thumbnailUrl).toBe('https://example.com/imagem.jpg');
+});
+
+test('createPreviewFromUrl strips HTML tags from tweet oEmbed previewText', async () => {
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      author_name: 'Utilizador X',
+      provider_name: 'X',
+      html: '<blockquote>Este e o texto do tweet <a href="#">#link</a></blockquote>',
+    }),
+  } as Response);
+
+  const draft = await createPreviewFromUrl('https://x.com/utilizador/status/123');
+  expect(draft.type).toBe('tweet');
+  expect(draft.previewText).not.toContain('<');
+  expect(draft.previewText).toContain('Este e o texto do tweet');
+});
+
+test('createPreviewFromUrl populates title and author from YouTube oEmbed', async () => {
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      title: 'Como fazer um video viral',
+      author_name: 'Canal Criativo',
+      provider_name: 'YouTube',
+      thumbnail_url: 'https://i.ytimg.com/vi/abc123/hqdefault.jpg',
+    }),
+  } as Response);
+
+  const draft = await createPreviewFromUrl('https://youtube.com/watch?v=abc123');
+  expect(draft.title).toBe('Como fazer um video viral');
+  expect(draft.author).toBe('Canal Criativo');
+  expect(draft.thumbnailUrl).toBe('https://i.ytimg.com/vi/abc123/hqdefault.jpg');
+});
