@@ -10,6 +10,7 @@ import { formatDate } from '../lib/format';
 import { buildEditPayload } from '../lib/edit';
 import { canDeleteIdea } from '../lib/delete';
 import { formatCategories } from '../lib/metadata';
+import { truncateText } from '../lib/truncate';
 import type { Idea } from '../lib/types';
 
 type UserFilter = 'mine' | 'all';
@@ -175,6 +176,7 @@ function IdeaCard({ idea, userId }: { idea: Idea; userId: string }) {
           <>
             <Text style={styles.cardTitle} numberOfLines={3}>{idea.title}</Text>
             {idea.author ? <Text style={styles.cardAuthor}>{idea.author}</Text> : null}
+            {idea.notes ? <Text style={styles.cardNotes}>{truncateText(idea.notes, 120)}</Text> : null}
             {idea.categories?.length ? (
               <View style={styles.tagRow}>
                 {idea.categories.map(cat => (
@@ -224,6 +226,7 @@ const styles = StyleSheet.create({
   cardMeta: { fontSize: 11, color: '#999', textTransform: 'uppercase', marginBottom: 4 },
   cardTitle: { fontSize: 15, fontWeight: '600', color: '#111', marginBottom: 4 },
   cardAuthor: { fontSize: 13, color: '#666' },
+  cardNotes: { fontSize: 13, color: '#555', marginTop: 4, lineHeight: 18 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 8 },
   tag: { fontSize: 11, backgroundColor: '#ebebeb', paddingVertical: 2, paddingHorizontal: 8, borderRadius: 10, color: '#444' },
   count: { fontSize: 11, color: '#999', paddingHorizontal: 12, marginBottom: 4 },
