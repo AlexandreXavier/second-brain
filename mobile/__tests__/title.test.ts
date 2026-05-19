@@ -31,6 +31,16 @@ test('suggestTitle returns null when API returns blank title', async () => {
   expect(result).toBeNull();
 });
 
+test('suggestTitle returns null when API responds with an error status', async () => {
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    ok: false,
+    status: 500,
+  } as Response);
+
+  const result = await suggestTitle({ idToken: 'tok', source: 'https://example.com' });
+  expect(result).toBeNull();
+});
+
 test('suggestTitle sends Authorization Bearer header', async () => {
   const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
     ok: true,
