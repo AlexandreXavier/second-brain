@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { firestore, auth } from '../lib/firebase';
 import { scopeIdeas, extractCategories, searchIdeas } from '../lib/library';
+import { ideaMetaLabel } from '../lib/display';
 import type { Idea } from '../lib/types';
 
 type UserFilter = 'mine' | 'all';
@@ -99,7 +100,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
     <View style={styles.card}>
       {image ? <Image source={{ uri: image }} style={styles.cardImage} /> : null}
       <View style={styles.cardBody}>
-        <Text style={styles.cardMeta}>{idea.source || idea.type}</Text>
+        <Text style={styles.cardMeta}>{ideaMetaLabel(idea)}</Text>
         <Text style={styles.cardTitle} numberOfLines={3}>{idea.title}</Text>
         {idea.author ? <Text style={styles.cardAuthor}>{idea.author}</Text> : null}
         {idea.categories?.length ? (
