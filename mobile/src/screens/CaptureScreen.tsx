@@ -5,7 +5,8 @@ import {
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, storage, auth } from '../lib/firebase';
-import { createPreviewFromUrl, parseCategories } from '../lib/metadata';
+import { parseCategories } from '../lib/metadata';
+import { buildCaptureDraft } from '../lib/capture';
 import type { IdeaDraft } from '../lib/types';
 
 export function CaptureScreen() {
@@ -19,7 +20,8 @@ export function CaptureScreen() {
   async function handleFetchPreview() {
     setIsFetching(true);
     try {
-      const preview = await createPreviewFromUrl(source);
+      const idToken = (await auth().currentUser?.getIdToken()) ?? null;
+      const preview = await buildCaptureDraft(source, idToken);
       setDraft(preview);
     } finally {
       setIsFetching(false);
