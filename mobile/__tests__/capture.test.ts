@@ -64,3 +64,18 @@ test('patchDraftWithImage preserves other fields from prev draft', () => {
   expect(result.categories).toEqual(['Video']);
   expect(result.url).toBe('https://example.com');
 });
+
+test('buildCaptureDraft forwards description and author from draft to suggestTitle', async () => {
+  mockCreatePreview.mockResolvedValue({
+    type: 'article', title: 'Titulo', categories: [],
+    description: 'Descricao do artigo', author: 'Autor X',
+  });
+  mockSuggestTitle.mockResolvedValue(null);
+
+  await buildCaptureDraft('https://example.com', 'meu-token');
+
+  expect(mockSuggestTitle).toHaveBeenCalledWith(expect.objectContaining({
+    description: 'Descricao do artigo',
+    author: 'Autor X',
+  }));
+});
