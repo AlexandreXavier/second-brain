@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Política de Privacidade · Segundo Cerebro</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<style>
+  :root {
+    --fill: rgb(251 254 251);
+    --fg1: rgb(40 39 40);
+    --fg2: rgba(40 39 40 / 0.8);
+    --fg3: rgba(40 39 40 / 0.56);
+    --accent: rgb(0 108 172);
+    --border: rgb(236 233 233);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fill: rgb(33 39 55);
+      --fg1: rgb(234 237 243);
+      --fg2: rgba(234 237 243 / 0.8);
+      --fg3: rgba(234 237 243 / 0.58);
+      --accent: rgb(255 107 1);
+      --border: rgb(171 75 8);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fill);
+    color: var(--fg1);
+    font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+  header {
+    border-top: 1px solid var(--border);
+    padding-top: 1.4rem;
+    margin-bottom: 2rem;
+  }
+  header .eyebrow {
+    color: var(--fg3);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0.6rem 0 0;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1.1;
+  }
+  h2 {
+    margin: 2.4rem 0 0.6rem;
+    font-size: 1.2rem;
+    color: var(--fg1);
+  }
+  p, li { color: var(--fg2); }
+  a { color: var(--accent); }
+  ul { padding-left: 1.2rem; }
+  .meta {
+    color: var(--fg3);
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+  }
+  footer {
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.2rem;
+    color: var(--fg3);
+    font-size: 0.9rem;
+  }
+  footer a { color: var(--fg2); text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">Segundo Cerebro</span>
+    <h1>Política de Privacidade</h1>
+    <p class="meta">Última atualização: 20 de maio de 2026</p>
+  </header>
+
+  <p>
+    Esta política descreve que dados pessoais o <strong>Segundo Cerebro</strong> recolhe, com que fim,
+    onde ficam guardados e quais os teus direitos sobre eles. Aplica-se às versões web, desktop (Mac) e mobile (Android) da aplicação.
+  </p>
+
+  <h2>1. Quem somos</h2>
+  <p>
+    O Segundo Cerebro é uma biblioteca visual partilhada para guardar ideias de vídeo, posts, artigos e referências.
+    A aplicação é operada pela equipa do projeto. Para qualquer questão sobre os teus dados, contacta-nos em
+    <a href="mailto:jalexandre.xavier@gmail.com">jalexandre.xavier@gmail.com</a>.
+  </p>
+
+  <h2>2. Dados que recolhemos</h2>
+  <ul>
+    <li><strong>Informação da conta Google:</strong> ao entrar, recebemos do Google o teu nome, endereço de email e fotografia de perfil. Não temos acesso à tua password.</li>
+    <li><strong>Conteúdos que guardas (capturas):</strong> URLs, títulos, descrições, categorias, notas e imagens que tu próprio adicionas à biblioteca.</li>
+    <li><strong>Metadados técnicos:</strong> data e hora de criação de cada captura, identificador interno do utilizador que a criou.</li>
+  </ul>
+
+  <h2>3. Como usamos os dados</h2>
+  <ul>
+    <li>Para te autenticar e mostrar apenas a biblioteca à qual tens acesso.</li>
+    <li>Para guardar e apresentar as capturas que criaste, e — se ativares o filtro <em>Toda a equipa</em> — as capturas criadas por outros membros da mesma biblioteca.</li>
+    <li>Para gerar pré-visualizações automáticas dos URLs que colas (título, imagem, autor) através de serviços públicos de oEmbed.</li>
+    <li>Opcionalmente, para sugerir um título curto a partir do URL ou ficheiro carregado, recorrendo a um modelo de linguagem (ver secção 5).</li>
+  </ul>
+  <p>Não usamos os teus dados para publicidade, perfilagem comercial ou venda a terceiros.</p>
+
+  <h2>4. Onde os dados ficam guardados</h2>
+  <p>
+    Os dados são armazenados na infraestrutura do Google Firebase (projeto <code>my-brain-9d788</code>), nomeadamente:
+  </p>
+  <ul>
+    <li><strong>Firebase Authentication</strong> — gestão da tua sessão.</li>
+    <li><strong>Cloud Firestore</strong> — capturas, categorias, e perfis de utilizador.</li>
+    <li><strong>Cloud Storage</strong> — imagens (capturas de ecrã, miniaturas) que envies.</li>
+  </ul>
+  <p>
+    O Google é processador de dados destes serviços, sujeito às respetivas
+    <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">políticas de privacidade do Google</a>.
+    Os dados podem ser tratados em servidores na União Europeia ou nos Estados Unidos, conforme a configuração do Firebase.
+  </p>
+
+  <h2>5. Terceiros (processadores)</h2>
+  <ul>
+    <li><strong>Google / Firebase</strong> — autenticação, base de dados, armazenamento, e hosting da versão web.</li>
+    <li><strong>Microlink, oEmbed do YouTube/X/Instagram</strong> — quando colas um URL, contactamos o respetivo serviço público para obter os metadados de pré-visualização. Nenhum dado pessoal teu é enviado, apenas o URL público.</li>
+    <li><strong>OpenRouter (opcional)</strong> — se a sugestão automática de título estiver ativa, o URL é enviado a um modelo de linguagem alojado pela OpenRouter para gerar um título curto. Nenhum dado de conta é incluído neste pedido.</li>
+  </ul>
+
+  <h2>6. Retenção</h2>
+  <p>
+    As capturas que crias ficam guardadas até as apagares ou até pedires a remoção da tua conta.
+    Se pedires a eliminação da conta, removemos os dados associados ao teu identificador num prazo razoável (geralmente 30 dias),
+    com exceção de cópias de segurança operacionais que expiram automaticamente.
+  </p>
+
+  <h2>7. Os teus direitos</h2>
+  <p>Tens o direito de:</p>
+  <ul>
+    <li>Aceder aos dados que guardamos sobre ti.</li>
+    <li>Retificar dados incorretos.</li>
+    <li>Apagar a tua conta e os dados associados.</li>
+    <li>Exportar uma cópia das tuas capturas.</li>
+    <li>Apresentar uma reclamação à Comissão Nacional de Proteção de Dados (CNPD) ou à autoridade de proteção de dados do teu país.</li>
+  </ul>
+  <p>
+    Para exercer qualquer destes direitos, envia um email a
+    <a href="mailto:jalexandre.xavier@gmail.com">jalexandre.xavier@gmail.com</a>.
+  </p>
+
+  <h2>8. Segurança</h2>
+  <p>
+    Toda a comunicação entre o teu dispositivo e a infraestrutura do Firebase ocorre sobre HTTPS.
+    O acesso aos dados é restrito aos utilizadores autenticados com Google Sign-In e às regras de segurança configuradas no Firestore e no Storage.
+  </p>
+
+  <h2>9. Crianças</h2>
+  <p>
+    O Segundo Cerebro não se destina a menores de 13 anos. Se acreditas que recolhemos inadvertidamente dados de uma criança,
+    contacta-nos para que possamos eliminar a conta.
+  </p>
+
+  <h2>10. Alterações a esta política</h2>
+  <p>
+    Podemos atualizar esta política para refletir mudanças na aplicação ou na lei aplicável.
+    A versão em vigor é sempre a publicada neste URL, com a data de “última atualização” no topo.
+  </p>
+
+  <footer>
+    <a href="/">Voltar a Segundo Cerebro</a>
+  </footer>
+</main>
+</body>
+</html>
