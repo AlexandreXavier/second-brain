@@ -924,3 +924,202 @@ textarea:focus {
     font-size: 3.2rem;
   }
 }
+
+/* Landing page (signed-out marketing surface) */
+
+.landing {
+  display: grid;
+  gap: 4rem;
+  width: min(100%, 64rem);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.landing-hero {
+  display: grid;
+  justify-items: start;
+  gap: 1.1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.4rem;
+}
+
+.landing-hero .brand-logo {
+  width: 6rem;
+  height: 6rem;
+}
+
+.landing-headline {
+  max-width: 18ch;
+  font-family: "Alumni Sans Pinstripe", "Roboto", sans-serif;
+  font-size: clamp(2.8rem, 8vw, 5.2rem);
+  font-weight: 400;
+  line-height: 1.04;
+  margin: 0;
+}
+
+.landing-subhead {
+  max-width: 58ch;
+  color: var(--fg2);
+  line-height: 1.7;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.landing-video {
+  display: grid;
+}
+
+.landing-video-placeholder {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  gap: 0.6rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: var(--fg3);
+}
+
+.landing-video-placeholder p {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.landing-features {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.landing-feature {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.4rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: var(--fg2);
+}
+
+.landing-feature h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--fg1);
+  margin: 0;
+}
+
+.landing-feature p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.landing-feature > svg {
+  color: var(--accent);
+}
+
+.landing-downloads {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.landing-download {
+  display: grid;
+  justify-items: start;
+  gap: 0.35rem;
+  padding: 1.2rem 1.3rem;
+  background: var(--fill);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  color: var(--fg1);
+  text-decoration: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.landing-download:hover:not(:disabled):not(.landing-download-disabled) {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.landing-download > svg {
+  color: var(--accent);
+}
+
+.download-platform {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.download-action {
+  color: var(--fg2);
+  font-size: 0.95rem;
+}
+
+.download-meta {
+  color: var(--fg3);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.landing-download-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.landing-first-run {
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 0.8rem 1.1rem;
+  background: var(--card);
+}
+
+.landing-first-run summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--fg1);
+}
+
+.landing-first-run p {
+  margin: 0.8rem 0 0.6rem;
+  color: var(--fg2);
+  line-height: 1.6;
+}
+
+.landing-first-run pre {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--fill);
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.landing-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--fg3);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.2rem;
+}
+
+.landing-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--fg2);
+  text-decoration: none;
+}
+
+.landing-footer a:hover {
+  color: var(--accent);
+}

@@ -38,6 +38,7 @@ import { createPreviewFromUrl, formatCategories, parseCategories } from "./lib/m
 import { createAgentToken, sha256, tokenPreview } from "./lib/security";
 import { fileToDataUrl, suggestLiteralTitle } from "./lib/title";
 import type { Idea, IdeaDraft, UserProfile } from "./lib/types";
+import { LandingPage } from "./LandingPage";
 
 const emptyDraft: IdeaDraft = {
   type: "idea",
@@ -350,7 +351,7 @@ function App() {
   }
 
   if (!user) {
-    return <SignInScreen onSignIn={handleGoogleSignIn} />;
+    return <LandingPage onSignIn={handleGoogleSignIn} />;
   }
 
   function handleDragOver(event: React.DragEvent) {
@@ -503,54 +504,6 @@ function LoadingScreen() {
         <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" />
         <p>A abrir a biblioteca.</p>
       </div>
-    </div>
-  );
-}
-
-function SignInScreen({ onSignIn }: { onSignIn: () => Promise<void> }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  function getSignInErrorMessage(error: unknown) {
-    if (typeof error === "object" && error && "code" in error && error.code === "auth/unauthorized-domain") {
-      const localhostUrl = `http://localhost:${window.location.port || "5173"}/`;
-      return `O login Google esta bloqueado porque esta pagina foi aberta em ${window.location.host}. Abre ${localhostUrl} ou adiciona ${window.location.hostname} em Firebase Authentication, Settings, Authorized domains.`;
-    }
-
-    return "O login Google falhou. Tenta novamente.";
-  }
-
-  return (
-    <div className="auth-screen">
-      <section className="auth-panel">
-        <img className="brand-logo auth-logo" src="/xani-assets/logo.svg" alt="" style={{ width: '10rem', height: '10rem' }} />
-        <span className="eyebrow">Sistema criativo privado</span>
-        <h1>Um segundo cerebro visual para ideias de video.</h1>
-        <p>
-          Guarda publicacoes, videos, artigos, capturas, hooks e referencias numa biblioteca calma
-          onde a tua equipa e os agentes autorizados podem trabalhar.
-        </p>
-        <button
-          className="primary-action"
-          type="button"
-          disabled={busy}
-          onClick={async () => {
-            setError("");
-            setBusy(true);
-            try {
-              await onSignIn();
-            } catch (signInError) {
-              setError(getSignInErrorMessage(signInError));
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          <UserRound size={18} />
-          {busy ? "A abrir o Google" : "Entrar com Google"}
-        </button>
-        {error ? <p className="auth-error">{error}</p> : null}
-      </section>
     </div>
   );
 }
